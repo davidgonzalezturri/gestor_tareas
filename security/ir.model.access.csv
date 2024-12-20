@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_task_history,access.task.history,model_gestor_tarea_historial,,1,1,1,1
+access_task,access.task,model_gestor_tarea,,1,1,1,1

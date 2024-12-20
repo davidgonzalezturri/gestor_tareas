@@ -1,0 +1,12 @@
+/* Clase personalizada para el fondo de la vista Kanban */
+.my_kanban_background {
+    background-image: url('https://www.google.com/url?sa=i&url=https%3A%2F%2Fes.pinterest.com%2Fpin%2F807340670693070911%2F&psig=AOvVaw2dpj336658P50-GrPmyT3W&ust=1734635859573000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCKiAo6OEsooDFQAAAAAdAAAAABAE'); /* Ruta de la imagen */
+    background-size: cover; /* Ajusta la imagen para cubrir todo el contenedor */
+    background-position: center; /* Centra la imagen */
+    background-repeat: no-repeat; /* Evita que la imagen se repita */
+    height: 100%; /* Asegura que el contenedor ocupe todo el espacio */
+    width: 100%; /* Asegura que el contenedor ocupe todo el espacio */
+    opacity: 0.9; /* Opcional: Ajusta la transparencia del fondo */
+    z-index: -1; /* Asegura que la imagen quede detrás de los elementos Kanban */
+    position: absolute; /* Fija la imagen al fondo */
+}

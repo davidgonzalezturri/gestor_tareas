@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Vista formulario -->
+    <record id="view_task_form" model="ir.ui.view">
+        <field name="name">gestor.tarea.form</field>
+        <field name="model">gestor.tarea</field>
+        <field name="arch" type="xml">
+            <form string="Tarea">
+                <sheet>
+                    <group>
+                        <group colspan="8"> <!-- Tamaño columnas -->
+                            <field name="name"/>
+                            <field name="company_id"/>
+                            <field name="employee_name"/>
+                            <field name="user_id" string="Responsable"/>
+                        </group>
+                        <group colspan="8">
+                            <field name="date" widget="date"/>
+                            <field name="time" widget="float_time"/>
+                            <field name="is_completed" widget="statusbar" options="{'clickable': True}"/>
+                            <field name="project_id"/>
+                        </group>
+                    </group>
+                </sheet>
+
+                <!-- Historial de cambios -->
+                <notebook>
+                    <page string="Historial de Cambios">
+                        <field name="history_ids">
+                            <tree editable="bottom">
+                                <field name="change_date" readonly="1"/>
+                                <field name="field_changed" readonly="1"/>
+                                <field name="old_value" readonly="1"/>
+                                <field name="new_value" readonly="1"/>
+                                <field name="user_id" readonly="1"/>
+                            </tree>
+                        </field>
+                    </page>
+                    <page string="Comentarios">
+                        <field name="message_ids" widget="mail_thread"/>
+                    </page>
+                </notebook>
+
+                <!-- Agregar Chatter para mostrar el historial -->
+                <div class="oe_chatter">
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vista lista -->
+    <record id="view_task_tree" model="ir.ui.view">
+        <field name="name">gestor.tarea.tree</field>
+        <field name="model">gestor.tarea</field>
+        <field name="arch" type="xml">
+            <tree string="Tareas" decoration-info="is_completed == 'done'">
+                <field name="name"/>
+                <field name="company_id"/>
+                <field name="employee_name"/>
+                <field name="date"/>
+                <field name="is_completed"/>
+                <field name="project_id"/>
+                <button name="toggle_complete" type="object" string="✔ Completar" class="btn-success"
+                        invisible="is_completed == 'done'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vista Kanban -->
+    <record id="view_task_kanban" model="ir.ui.view">
+        <field name="name">gestor.tarea.kanban</field>
+        <field name="model">gestor.tarea</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_small_column my_kanban_background" default_group_by="is_completed">
+                <field name="is_completed"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="o_kanban_card">
+                            <div class="o_kanban_card_header" style="text-align: center;">
+                                <strong>
+                                    <field name="name"/>
+                                </strong>
+                            </div>
+                            <div class="o_kanban_card_content" style="display: flex; gap: 10px;">
+                                <!-- Cada campo ocupa el mismo tamaño gracias a flexbox -->
+                                <div style="flex: 1; text-align: center; border: 3px solid #fc0303; padding: 5px;">
+                                    <field name="employee_name"/>
+                                </div>
+                                <div style="flex: 1; text-align: center; border: 4px solid #033dfc; padding: 5px;">
+                                    <field name="date"/>
+                                </div>
+                                <div style="flex: 1; text-align: center; border: 3px solid #17fc03; padding: 5px;">
+                                    <field name="project_id"/>
+                                </div>
+                            </div>
+                            <div class="o_kanban_card_footer" style="text-align: center; margin-top: 10px;">
+                                <button name="toggle_complete" type="object" class="btn btn-sm btn-success"
+                                        string="Actualizar" invisible="is_completed == 'done'"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Filtros de búsqueda -->
+    <record id="gestor_tarea_search_view" model="ir.ui.view">
+        <field name="name">gestor.tarea.search</field>
+        <field name="model">gestor.tarea</field>
+        <field name="arch" type="xml">
+            <search string="Buscar Tareas">
+                <!-- Filtro por estado completado -->
+                <filter name="filter_completed" string="Completadas" domain="[('is_completed', '=', 'done')]"/>
+                <filter name="filter_pending" string="Pendientes" domain="[('is_completed', '=', 'pending')]"/>
+
+                <!-- Filtro por rango de fechas -->
+                <group string="Por Fecha">
+                    <filter name="filter_today" string="Hoy" domain="[('date', '=', context_today())]"/>
+                    <filter name="filter_this_week" string="Esta Semana"
+                            domain="[('date', '>=', context_today())]"/>
+                </group>
+
+                <!-- Campo de búsqueda rápida -->
+                <field name="name" string="Título"/>
+                <field name="employee_name" string="Empleado"/>
+                <field name="project_id" string="Proyecto"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Añadir búsqueda a la acción -->
+    <record id="action_task" model="ir.actions.act_window">
+        <field name="search_view_id" ref="gestor_tarea_search_view"/>
+    </record>
+
+    <!-- Acción para mostrar tareas -->
+    <record id="action_task" model="ir.actions.act_window">
+        <field name="name">Tareas</field>
+        <field name="res_model">gestor.tarea</field>
+        <field name="view_mode">kanban,tree,form</field>
+    </record>
+
+    <!-- Menú principal -->
+    <menuitem id="menu_gestor_tareas" name="Gestor de Tareas" sequence="1"/>
+
+    <!-- Submenú -->
+    <menuitem id="menu_tareas" name="Tareas" parent="menu_gestor_tareas" action="action_task"/>
+
+    <!-- Botón para exportar tareas -->
+    <record id="view_task_tree" model="ir.ui.view">
+        <field name="name">gestor.tarea.tree</field>
+        <field name="model">gestor.tarea</field>
+        <field name="arch" type="xml">
+            <tree string="Tareas" decoration-info="is_completed == 'done'">
+                <field name="name"/>
+                <field name="company_id"/>
+                <field name="employee_name"/>
+                <field name="date"/>
+                <field name="is_completed"/>
+                <field name="project_id"/>
+                <button name="export_to_excel" type="object" string="Exportar a Excel" class="btn-primary"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>
